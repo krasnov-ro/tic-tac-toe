@@ -23,7 +23,7 @@ namespace tic_tac_toe
         private void goGameButton_Click(object sender, EventArgs e)
         {
             var gameSize = radioButton3vs3.Checked ? 3 : 5;
-            var gameMode = gameModeComboBox.SelectedItem;
+            var gameMode = gameModeComboBox.SelectedIndex;
 
             Form gameForm = Application.OpenForms[0];
             gameForm.Show();

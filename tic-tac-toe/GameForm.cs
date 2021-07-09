@@ -23,7 +23,7 @@ namespace tic_tac_toe
             InitializeComponent();
         }
 
-        public void SetStartParams(int gameSize, object gameMode)
+        public void SetStartParams(int gameSize, int gameMode)
         {
             Random gen = new Random();
             this.gameSize = gameSize;
@@ -45,15 +45,67 @@ namespace tic_tac_toe
         {
             switch (gameMode)
             {
-                case "Копьютер против игрока":
+                case 0: //"Копьютер против игрока"
                     break;
 
-                case "Два игрока":
+                case 1: // "Два игрока"
                     break;
 
-                case "Компьютер против компьютера":
+                case 2: // "Компьютер против компьютера"
                     break;
             }
         }
+
+        private void Click(Button button)
+        {
+            //if() 
+        }
+
+        #region Обработка нажатий 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Click(sender as Button);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Click(sender as Button);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Click(sender as Button);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Click(sender as Button);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Click(sender as Button);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            Click(sender as Button);
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            Click(sender as Button);
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            Click(sender as Button);
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            Click(sender as Button);
+        }
+        #endregion
     }
 }
