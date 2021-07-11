@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using tic_tac_toe.Code.Enums;
@@ -85,102 +86,114 @@ namespace tic_tac_toe
                 SetButtonPositions();
             }
 
-            if (PlayerNumber == 1)
+            if (PlayerNumber == 1 && Convert.ToInt32(GameMode) != 2)
             {
                 BotStep();
+                this.Update();
+            }
+
+            if (Convert.ToInt32(GameMode) == 2)
+            {
+                for (int i = 0; i < GameSize * GameSize; i++)
+                {
+       
+                    Thread.Sleep(3000);
+                    BotStep();
+                    this.Update();
+                    if (gameStatusLabel.Text == null)
+                        break;
+                }
             }
         }
 
+        /// <summary>
+        /// Бот
+        /// </summary>
         private void BotStep()
         {
-            switch (GameMode)
+            Random rnd = new Random();
+            var buttonsIdArr = GameSize == 3 ? ThreeVsThreeWinIf : FiveVsFiveWinIf;
+
+            var pic1 = PlayerNumber == 1 ? Resources.zero : Resources.cross;
+            var pic2 = PlayerNumber == 2 ? Resources.cross : Resources.zero;
+
+            bool result = false;
+            int iterations = GameSize == 3 ? 8 : 12;
+            var whoIsBlock = CheckMaybeWin();
+            if (whoIsBlock != null)
             {
-                case 0: //"Копьютер против игрока"
-                    Random rnd = new Random();
-                    var buttonsIdArr = GameSize == 3 ? ThreeVsThreeWinIf : FiveVsFiveWinIf;
-                    bool result = false;
-                    int iterations = GameSize == 3 ? 8 : 12;
-                    var whoIsBlock = CheckMaybeWin();
-                    if(whoIsBlock != null)
+                var ij = whoIsBlock.Split(';');
+                buttonsIdArr[Convert.ToInt32(ij[0]), Convert.ToInt32(ij[1])].BackgroundImage = pic1;
+                if (CheckWinner())
+                    return;
+                PlayerNumber = PlayerNumber == 1 ? 2 : 1;
+                gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
+                pic2 = PlayerNumber == 2 ? Resources.cross : Resources.zero;
+                pictureBox1.Image = pic2;
+                CheckDraw();
+                return;
+            }
+
+            for (int i = rnd.Next(0, iterations - 1); i < iterations; ++i)
+            {
+                if (CheckDraw())
+                    break;
+
+                int setPosition = -1;
+                result = true;
+                for (int j = rnd.Next(0, GameSize); j < GameSize; ++j)
+                {
+                    if (buttonsIdArr[i, j].BackgroundImage != null)
                     {
-                        var ij = whoIsBlock.Split(';');
-                        buttonsIdArr[Convert.ToInt32(ij[0]),Convert.ToInt32(ij[1])].BackgroundImage = Resources.zero;
-                        if (CheckWinner())
-                            break;
-                        PlayerNumber = 2;
-                        gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
-                        pictureBox1.Image = Resources.cross;
-                        CheckDraw();
+                        if (buttonsIdArr[i, j].BackgroundImage?.Width == pic1.Width)
+                        {
+                            if (j > 0)
+                            {
+                                if (setPosition != -1)
+                                {
+                                    result = true;
+                                    break;
+                                }
+                                result = false;
+                                j = j++;
+                            }
+                            if (j == 0)
+                                j++;
+                        }
+                        else
+                        {
+                            if (j > 0)
+                            {
+                                if (setPosition != -1)
+                                {
+                                    result = true;
+                                    break;
+                                }
+                                j = j++;
+                                result = false;
+                            }
+                            else if (j == 0)
+                                continue;
+                        }
+                    }
+                    else
+                    {
+                        setPosition = j;
+                    }
+                }
+                if (result == true)
+                {
+                    buttonsIdArr[i, setPosition].BackgroundImage = pic1;
+                    if (CheckWinner())
                         break;
-                    }
-                        
-                    for (int i = rnd.Next(0, iterations - 1); i < iterations; ++i)
-                    {
-                        if (CheckDraw())
-                            break;
-
-                        int setPosition = -1;
-                        result = true;
-                        for (int j = rnd.Next(0, GameSize); j < GameSize; ++j)
-                        {
-                            if (buttonsIdArr[i, j].BackgroundImage != null)
-                            {
-                                if (buttonsIdArr[i, j].BackgroundImage?.Width == Resources.zero.Width)
-                                {
-                                    if (j > 0)
-                                    {
-                                        if (setPosition != -1)
-                                        {
-                                            result = true;
-                                            break;
-                                        }
-                                        result = false;
-                                        j = j++;
-                                    }
-                                    if (j == 0)
-                                        j++;
-                                }
-                                else
-                                {
-                                    if (j > 0)
-                                    {
-                                        if (setPosition != -1)
-                                        {
-                                            result = true;
-                                            break;
-                                        }
-                                        j = j++;
-                                        result = false;
-                                    }
-                                    else if (j == 0)
-                                        continue;
-                                }
-                            }
-                            else
-                            {
-                                setPosition = j;
-                            }
-                        }
-                        if (result == true)
-                        {
-                            buttonsIdArr[i, setPosition].BackgroundImage = Resources.zero;
-                            if (CheckWinner())
-                                break;
-                            PlayerNumber = 2;
-                            gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
-                            pictureBox1.Image = Resources.cross;
-                            CheckDraw();
-                            break;
-                        }
-                        i = rnd.Next(-1, iterations - 2);
-                    }
+                    PlayerNumber = PlayerNumber == 1 ? 2 : 1;
+                    gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
+                    pic2 = PlayerNumber == 2 ? Resources.cross : Resources.zero;
+                    pictureBox1.Image = pic2;
+                    CheckDraw();
                     break;
-
-                case 1: // "Два игрока"
-                    break;
-
-                case 2: // "Компьютер против компьютера"
-                    break;
+                }
+                i = rnd.Next(-1, iterations - 2);
             }
         }
 
@@ -361,9 +374,6 @@ namespace tic_tac_toe
                     }
                     sender.GetType().GetProperty("Enabled").SetValue(sender, false);
                     break;
-
-                case 2: // "Компьютер против компьютера"
-                    break;
             }
         }
 
@@ -470,7 +480,7 @@ namespace tic_tac_toe
                     {
                         needCrossCount++;
                     }
-                    else if(buttonsIdArr[i, j].BackgroundImage == null)
+                    else if (buttonsIdArr[i, j].BackgroundImage == null)
                     {
                         thisSet = j;
                     }
