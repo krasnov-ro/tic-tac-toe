@@ -28,6 +28,21 @@ namespace tic_tac_toe
             HideOrShowButtons(ShowOrHide.Hide);
         }
 
+        private void goGameButton_Click(object sender, EventArgs e)
+        {
+            GameParamsForm gameParamsForm = new GameParamsForm();
+            gameParamsForm.Show();
+            this.Hide();
+        }
+
+        private void startOverButton_Click(object sender, EventArgs e)
+        {
+            HideOrShowButtons(ShowOrHide.Hide);
+            GameParamsForm gameParamsForm = new GameParamsForm();
+            gameParamsForm.Show();
+            this.Hide();
+        }
+
         public void SetStartParams(int gameSize, int gameMode)
         {
             Random gen = new Random();
@@ -47,23 +62,10 @@ namespace tic_tac_toe
             this.GameMode = gameMode;
             goGameButton.Visible = false;
             PlayerNumber = gen.Next(100) < 50 ? 1 : 2;
-            LetsGo();
+            gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
+            pictureBox1.Image = PlayerNumber == 1 ? Resources.zero : Resources.cross;
             RefreshBattlefield(null);
-        }
-
-        private void goGameButton_Click(object sender, EventArgs e)
-        {
-            GameParamsForm gameParamsForm = new GameParamsForm();
-            gameParamsForm.Show();
-            this.Hide();
-        }
-
-        private void startOverButton_Click(object sender, EventArgs e)
-        {
-            HideOrShowButtons(ShowOrHide.Hide);
-            GameParamsForm gameParamsForm = new GameParamsForm();
-            gameParamsForm.Show();
-            this.Hide();
+            LetsGo();
         }
 
         private void LetsGo()
@@ -83,7 +85,7 @@ namespace tic_tac_toe
                 SetButtonPositions();
             }
 
-            if (WhoIsFirst)
+            if (PlayerNumber == 1)
             {
                 BotStep();
             }
@@ -94,16 +96,72 @@ namespace tic_tac_toe
             switch (GameMode)
             {
                 case 0: //"Копьютер против игрока"
-                    if (WhoIsFirst)
+                    Random rnd = new Random();
+                    var buttonsIdArr = GameSize == 3 ? ThreeVsThreeWinIf : FiveVsFiveWinIf;
+                    bool result = false;
+                    int iterations = GameSize == 3 ? 8 : 12;
+
+                    for (int i = rnd.Next(0, iterations - 1); i < iterations; ++i)
                     {
-                        Random rnd = new Random();
-                        var botStepNumber = rnd.Next(1, GameSize * GameSize);
-                        var buttons = this.Controls;
-                        buttons[botStepNumber].BackgroundImage = Resources.zero;
-                    }
-                    else
-                    {
-                        gameStatusLabel.Text = "Ходит игрок";
+                        if (CheckDraw())
+                            break;
+
+                        int setPosition = -1;
+                        result = true;
+                        for (int j = rnd.Next(0, GameSize); j < GameSize; ++j)
+                        {
+
+
+                            if (buttonsIdArr[i, j].BackgroundImage != null)
+                            {
+                                if (buttonsIdArr[i, j].BackgroundImage?.Width == Resources.zero.Width)
+                                {
+                                    if (j > 0)
+                                    {
+                                        if (setPosition != -1)
+                                        {
+                                            result = true;
+                                            break;
+                                        }
+                                        result = false;
+                                        j = j++;
+                                    }
+                                    if (j == 0)
+                                        j++;
+                                }
+                                else
+                                {
+                                    if (j > 0)
+                                    {
+                                        if (setPosition != -1)
+                                        {
+                                            result = true;
+                                            break;
+                                        }
+                                        j = j++;
+                                        result = false;
+                                    }
+                                    else if (j == 0)
+                                        continue;
+                                }
+                            }
+                            else
+                            {
+                                setPosition = j;
+                            }
+                        }
+                        if (result == true)
+                        {
+                            buttonsIdArr[i, setPosition].BackgroundImage = Resources.zero;
+                            if (CheckWinner())
+                                break;
+                            PlayerNumber = 2;
+                            gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
+                            pictureBox1.Image = Resources.cross;
+                            CheckDraw();
+                            break;
+                        }
+                        i = rnd.Next(-1, iterations - 2);
                     }
                     break;
 
@@ -255,26 +313,38 @@ namespace tic_tac_toe
             switch (GameMode)
             {
                 case 0: //"Копьютер против игрока"
+                    if (PlayerNumber == 2)
+                    {
+                        sender.GetType().GetProperty("BackgroundImage").SetValue(sender, Resources.cross);
+                        if (CheckWinner())
+                            break;
+                        PlayerNumber = 1;
+                        gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
+                        pictureBox1.Image = PlayerNumber == 1 ? Resources.zero : Resources.cross;
+                        BotStep();
+                    }
                     break;
 
                 case 1: // "Два игрока"
                     if (PlayerNumber == 1)
                     {
                         sender.GetType().GetProperty("BackgroundImage").SetValue(sender, Resources.zero);
+                        if (CheckWinner())
+                            break;
                         PlayerNumber = 2;
+                        gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
+                        pictureBox1.Image = PlayerNumber == 1 ? Resources.zero : Resources.cross;
                     }
                     else if (PlayerNumber == 2)
                     {
                         sender.GetType().GetProperty("BackgroundImage").SetValue(sender, Resources.cross);
+                        if (CheckWinner())
+                            break;
                         PlayerNumber = 1;
+                        gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
+                        pictureBox1.Image = PlayerNumber == 1 ? Resources.zero : Resources.cross;
                     }
                     sender.GetType().GetProperty("Enabled").SetValue(sender, false);
-                    var winOrNo = CheckWinner();
-                    if (winOrNo)
-                    {
-                        MessageBox.Show($"Выиграл игрок №{PlayerNumber}");
-                        RefreshBattlefield(winOrNo);
-                    }
                     break;
 
                 case 2: // "Компьютер против компьютера"
@@ -296,14 +366,20 @@ namespace tic_tac_toe
                 result = true;
                 for (int j = 0; j < GameSize; ++j)
                 {
-                    if (buttonsIdArr[i,j].BackgroundImage?.Width != Resources.cross.Width)
+                    if (buttonsIdArr[i, j].BackgroundImage?.Width != Resources.cross.Width)
                     {
                         result = false;
                         break;
                     }
                 }
                 if (result)
+                {
+                    gameStatusLabel.Text = $"";
+                    pictureBox1.Image = null;
+                    MessageBox.Show($"Выиграл игрок №{PlayerNumber} ");
+                    RefreshBattlefield(result);
                     return result;
+                }
 
                 result = true;
                 for (int j = 0; j < GameSize; ++j)
@@ -315,7 +391,47 @@ namespace tic_tac_toe
                     }
                 }
                 if (result)
+                {
+                    gameStatusLabel.Text = $"";
+                    pictureBox1.Image = null;
+                    MessageBox.Show($"Выиграл игрок №{PlayerNumber} ");
+                    RefreshBattlefield(result);
                     return result;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Проверка на ничью
+        /// </summary>
+        /// <returns></returns>
+        private bool CheckDraw()
+        {
+            var buttonsIdArr = GameSize == 3 ? ThreeVsThreeWinIf : FiveVsFiveWinIf;
+            bool result = false;
+            int iterations = GameSize == 3 ? 8 : 12;
+            for (int i = 0; i < iterations; ++i)
+            {
+                result = true;
+                for (int j = 0; j < GameSize; ++j)
+                {
+                    if (buttonsIdArr[i, j].BackgroundImage == null)
+                    {
+                        result = false;
+                        break;
+                    }
+                }
+                if (result == false)
+                    break;
+            }
+            if (result == true)
+            {
+                gameStatusLabel.Text = $"";
+                pictureBox1.Image = null;
+                MessageBox.Show($"Ничья!");
+                RefreshBattlefield(result);
+                return result;
             }
             return result;
         }

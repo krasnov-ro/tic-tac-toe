@@ -57,6 +57,8 @@ namespace tic_tac_toe
             this.button25 = new System.Windows.Forms.Button();
             this.startOverButton = new System.Windows.Forms.Button();
             this.gameStatusLabel = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
@@ -436,10 +438,19 @@ namespace tic_tac_toe
             // gameStatusLabel
             // 
             this.gameStatusLabel.AutoSize = true;
-            this.gameStatusLabel.Location = new System.Drawing.Point(346, 26);
+            this.gameStatusLabel.Location = new System.Drawing.Point(12, 52);
             this.gameStatusLabel.Name = "gameStatusLabel";
             this.gameStatusLabel.Size = new System.Drawing.Size(0, 15);
             this.gameStatusLabel.TabIndex = 27;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(115, 49);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(22, 20);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 28;
+            this.pictureBox1.TabStop = false;
             // 
             // GameForm
             // 
@@ -448,6 +459,7 @@ namespace tic_tac_toe
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(902, 634);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.gameStatusLabel);
             this.Controls.Add(this.startOverButton);
             this.Controls.Add(this.button25);
@@ -478,6 +490,7 @@ namespace tic_tac_toe
             this.Controls.Add(this.button1);
             this.Name = "GameForm";
             this.Text = "Tic-Tac-Toe";
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -513,6 +526,7 @@ namespace tic_tac_toe
         private System.Windows.Forms.Button button25;
         private System.Windows.Forms.Button startOverButton;
         private System.Windows.Forms.Label gameStatusLabel;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 
