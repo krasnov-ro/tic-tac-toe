@@ -331,6 +331,8 @@ namespace tic_tac_toe
                         sender.GetType().GetProperty("BackgroundImage").SetValue(sender, Resources.zero);
                         if (CheckWinner())
                             break;
+                        if (CheckDraw())
+                            break;
                         PlayerNumber = 2;
                         gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
                         pictureBox1.Image = PlayerNumber == 1 ? Resources.zero : Resources.cross;
@@ -339,6 +341,8 @@ namespace tic_tac_toe
                     {
                         sender.GetType().GetProperty("BackgroundImage").SetValue(sender, Resources.cross);
                         if (CheckWinner())
+                            break;
+                        if (CheckDraw())
                             break;
                         PlayerNumber = 1;
                         gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
