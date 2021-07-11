@@ -20,7 +20,7 @@ namespace tic_tac_toe
         private int GameSize { get; set; }
         private object GameMode { get; set; }
         private int PlayerNumber { get; set; }
-        private bool WhoIsFirst { get; set; }
+        private bool BlockWin { get; set; }
 
         public GameForm()
         {
@@ -100,7 +100,20 @@ namespace tic_tac_toe
                     var buttonsIdArr = GameSize == 3 ? ThreeVsThreeWinIf : FiveVsFiveWinIf;
                     bool result = false;
                     int iterations = GameSize == 3 ? 8 : 12;
-
+                    var whoIsBlock = CheckMaybeWin();
+                    if(whoIsBlock != null)
+                    {
+                        var ij = whoIsBlock.Split(';');
+                        buttonsIdArr[Convert.ToInt32(ij[0]),Convert.ToInt32(ij[1])].BackgroundImage = Resources.zero;
+                        if (CheckWinner())
+                            break;
+                        PlayerNumber = 2;
+                        gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
+                        pictureBox1.Image = Resources.cross;
+                        CheckDraw();
+                        break;
+                    }
+                        
                     for (int i = rnd.Next(0, iterations - 1); i < iterations; ++i)
                     {
                         if (CheckDraw())
@@ -110,8 +123,6 @@ namespace tic_tac_toe
                         result = true;
                         for (int j = rnd.Next(0, GameSize); j < GameSize; ++j)
                         {
-
-
                             if (buttonsIdArr[i, j].BackgroundImage != null)
                             {
                                 if (buttonsIdArr[i, j].BackgroundImage?.Width == Resources.zero.Width)
@@ -438,6 +449,39 @@ namespace tic_tac_toe
                 return result;
             }
             return result;
+        }
+
+        /// <summary>
+        /// Проверка, не выигрывает ли оппонент
+        /// </summary>
+        /// <returns></returns>
+        private string CheckMaybeWin()
+        {
+            var buttonsIdArr = GameSize == 3 ? ThreeVsThreeWinIf : FiveVsFiveWinIf;
+            int iterations = GameSize == 3 ? 8 : 12;
+            string maybeWin = String.Empty;
+            for (int i = 0; i < iterations; ++i)
+            {
+                int needCrossCount = 0;
+                int thisSet = -1;
+                for (int j = 0; j < GameSize; ++j)
+                {
+                    if (buttonsIdArr[i, j].BackgroundImage?.Width == Resources.cross.Width)
+                    {
+                        needCrossCount++;
+                    }
+                    else if(buttonsIdArr[i, j].BackgroundImage == null)
+                    {
+                        thisSet = j;
+                    }
+                }
+                if (needCrossCount == (GameSize == 3 ? 2 : 4) && thisSet != -1)
+                {
+                    maybeWin += $"{i};{thisSet}";
+                    return maybeWin;
+                }
+            }
+            return null;
         }
     }
 }
