@@ -100,7 +100,7 @@ namespace tic_tac_toe
                     Thread.Sleep(3000);
                     BotStep();
                     this.Update();
-                    if (gameStatusLabel.Text == null)
+                    if (gameStatusLabel.Text == String.Empty)
                         break;
                 }
             }
@@ -116,10 +116,27 @@ namespace tic_tac_toe
 
             var pic1 = PlayerNumber == 1 ? Resources.zero : Resources.cross;
             var pic2 = PlayerNumber == 2 ? Resources.cross : Resources.zero;
+            var pic3 = PlayerNumber == 1 ? Resources.cross : Resources.zero;
 
             bool result = false;
             int iterations = GameSize == 3 ? 8 : 12;
-            var whoIsBlock = CheckMaybeWin();
+
+            var whoIsWin = CheckMaybeWin(pic1);
+            if (whoIsWin != null)
+            {
+                var ij = whoIsWin.Split(';');
+                buttonsIdArr[Convert.ToInt32(ij[0]), Convert.ToInt32(ij[1])].BackgroundImage = pic1;
+                if (CheckWinner())
+                    return;
+                PlayerNumber = PlayerNumber == 1 ? 2 : 1;
+                gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
+                pic2 = PlayerNumber == 2 ? Resources.cross : Resources.zero;
+                pictureBox1.Image = pic2;
+                CheckDraw();
+                return;
+            }
+
+            var whoIsBlock = CheckMaybeWin(pic3);
             if (whoIsBlock != null)
             {
                 var ij = whoIsBlock.Split(';');
@@ -462,10 +479,10 @@ namespace tic_tac_toe
         }
 
         /// <summary>
-        /// Проверка, не выигрывает ли оппонент
+        /// Проверка, не выигрывает ли оппонент или я
         /// </summary>
         /// <returns></returns>
-        private string CheckMaybeWin()
+        private string CheckMaybeWin(Bitmap oponent)
         {
             var buttonsIdArr = GameSize == 3 ? ThreeVsThreeWinIf : FiveVsFiveWinIf;
             int iterations = GameSize == 3 ? 8 : 12;
@@ -476,7 +493,7 @@ namespace tic_tac_toe
                 int thisSet = -1;
                 for (int j = 0; j < GameSize; ++j)
                 {
-                    if (buttonsIdArr[i, j].BackgroundImage?.Width == Resources.cross.Width)
+                    if (buttonsIdArr[i, j].BackgroundImage?.Width == oponent.Width)
                     {
                         needCrossCount++;
                     }
