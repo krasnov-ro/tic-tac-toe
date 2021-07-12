@@ -97,7 +97,7 @@ namespace tic_tac_toe
                 for (int i = 0; i < GameSize * GameSize; i++)
                 {
        
-                    Thread.Sleep(3000);
+                    Thread.Sleep(1500);
                     BotStep();
                     this.Update();
                     if (gameStatusLabel.Text == String.Empty)

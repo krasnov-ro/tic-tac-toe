@@ -68,7 +68,7 @@ namespace tic_tac_toe
             this.radioButton5vs5.Text = "игра 5 х 5";
             this.radioButton5vs5.UseVisualStyleBackColor = true;
             // 
-            // comboBox1
+            // gameModeComboBox
             // 
             this.gameModeComboBox.FormattingEnabled = true;
             this.gameModeComboBox.Items.AddRange(new object[] {
@@ -76,7 +76,7 @@ namespace tic_tac_toe
             "Два игрока",
             "Компьютер против компьютера"});
             this.gameModeComboBox.Location = new System.Drawing.Point(29, 74);
-            this.gameModeComboBox.Name = "comboBox1";
+            this.gameModeComboBox.Name = "gameModeComboBox";
             this.gameModeComboBox.Size = new System.Drawing.Size(234, 23);
             this.gameModeComboBox.TabIndex = 4;
             // 
@@ -90,7 +90,9 @@ namespace tic_tac_toe
             this.Controls.Add(this.radioButton5vs5);
             this.Controls.Add(this.radioButton3vs3);
             this.Controls.Add(this.goGameButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "GameParamsForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "GameParams";
             this.ResumeLayout(false);
             this.PerformLayout();
