@@ -26,26 +26,40 @@ namespace tic_tac_toe
         public GameForm()
         {
             InitializeComponent();
+            startOverButton.Visible = false;
+            radioButton3vs3.Checked = true;
+            gameModeComboBox.SelectedIndex = 0;
             HideOrShowButtons(ShowOrHide.Hide);
         }
 
         private void goGameButton_Click(object sender, EventArgs e)
         {
-            GameParamsForm gameParamsForm = new GameParamsForm();
-            gameParamsForm.Show();
-            this.Hide();
+            var gameSize = radioButton3vs3.Checked ? 3 : 5;
+            var gameMode = gameModeComboBox.SelectedIndex;
+            SetStartParams(gameSize, gameMode);
         }
 
         private void startOverButton_Click(object sender, EventArgs e)
         {
+            startOverButton.Visible = false;
+            goGameButton.Visible = true;
+            radioButton3vs3.Visible = true;
+            radioButton5vs5.Visible = true;
+            gameModeComboBox.Visible = true;
             HideOrShowButtons(ShowOrHide.Hide);
-            GameParamsForm gameParamsForm = new GameParamsForm();
-            gameParamsForm.Show();
-            this.Hide();
+            var gameSize = radioButton3vs3.Checked ? 3 : 5;
+            var gameMode = gameModeComboBox.SelectedIndex;
+            //SetStartParams(gameSize, gameMode);
         }
 
         public void SetStartParams(int gameSize, int gameMode)
         {
+            startOverButton.Visible = true;
+            goGameButton.Visible = false;
+            radioButton5vs5.Visible = false;
+            radioButton3vs3.Visible = false;
+            gameModeComboBox.Visible = false;
+
             Random gen = new Random();
             ThreeVsThreeWinIf = new Button[8, 3] {
                     { button1, button2, button3 },  { button1, button4, button7 }, { button1, button5, button9 },
@@ -96,7 +110,7 @@ namespace tic_tac_toe
             {
                 for (int i = 0; i < GameSize * GameSize; i++)
                 {
-       
+
                     Thread.Sleep(1500);
                     BotStep();
                     this.Update();

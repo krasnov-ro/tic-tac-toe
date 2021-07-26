@@ -58,6 +58,9 @@ namespace tic_tac_toe
             this.startOverButton = new System.Windows.Forms.Button();
             this.gameStatusLabel = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.radioButton3vs3 = new System.Windows.Forms.RadioButton();
+            this.radioButton5vs5 = new System.Windows.Forms.RadioButton();
+            this.gameModeComboBox = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -191,7 +194,7 @@ namespace tic_tac_toe
             // 
             this.goGameButton.BackColor = System.Drawing.Color.White;
             this.goGameButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.goGameButton.Location = new System.Drawing.Point(12, 12);
+            this.goGameButton.Location = new System.Drawing.Point(12, 593);
             this.goGameButton.Name = "goGameButton";
             this.goGameButton.Size = new System.Drawing.Size(92, 29);
             this.goGameButton.TabIndex = 9;
@@ -452,6 +455,40 @@ namespace tic_tac_toe
             this.pictureBox1.TabIndex = 28;
             this.pictureBox1.TabStop = false;
             // 
+            // radioButton3vs3
+            // 
+            this.radioButton3vs3.AutoSize = true;
+            this.radioButton3vs3.Location = new System.Drawing.Point(15, 12);
+            this.radioButton3vs3.Name = "radioButton3vs3";
+            this.radioButton3vs3.Size = new System.Drawing.Size(80, 19);
+            this.radioButton3vs3.TabIndex = 2;
+            this.radioButton3vs3.TabStop = true;
+            this.radioButton3vs3.Text = " игра 3 х 3";
+            this.radioButton3vs3.UseVisualStyleBackColor = true;
+            // 
+            // radioButton5vs5
+            // 
+            this.radioButton5vs5.AutoSize = true;
+            this.radioButton5vs5.Location = new System.Drawing.Point(170, 12);
+            this.radioButton5vs5.Name = "radioButton5vs5";
+            this.radioButton5vs5.Size = new System.Drawing.Size(77, 19);
+            this.radioButton5vs5.TabIndex = 3;
+            this.radioButton5vs5.TabStop = true;
+            this.radioButton5vs5.Text = "игра 5 х 5";
+            this.radioButton5vs5.UseVisualStyleBackColor = true;
+            // 
+            // gameModeComboBox
+            // 
+            this.gameModeComboBox.FormattingEnabled = true;
+            this.gameModeComboBox.Items.AddRange(new object[] {
+            "Копьютер против игрока",
+            "Два игрока",
+            "Компьютер против компьютера"});
+            this.gameModeComboBox.Location = new System.Drawing.Point(12, 70);
+            this.gameModeComboBox.Name = "gameModeComboBox";
+            this.gameModeComboBox.Size = new System.Drawing.Size(241, 23);
+            this.gameModeComboBox.TabIndex = 4;
+            // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -459,8 +496,11 @@ namespace tic_tac_toe
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(902, 634);
+            this.Controls.Add(this.gameModeComboBox);
             this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.radioButton5vs5);
             this.Controls.Add(this.gameStatusLabel);
+            this.Controls.Add(this.radioButton3vs3);
             this.Controls.Add(this.startOverButton);
             this.Controls.Add(this.button25);
             this.Controls.Add(this.button24);
@@ -531,6 +571,10 @@ namespace tic_tac_toe
         private System.Windows.Forms.Button startOverButton;
         private System.Windows.Forms.Label gameStatusLabel;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.RadioButton radioButton3vs3;
+        private System.Windows.Forms.RadioButton radioButton5vs5;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox gameModeComboBox;
     }
 }
 
