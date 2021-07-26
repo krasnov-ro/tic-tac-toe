@@ -86,7 +86,7 @@ namespace tic_tac_toe
                 SetButtonPositions();
             }
 
-            if (PlayerNumber == 1 && Convert.ToInt32(GameMode) != 2)
+            if (PlayerNumber == 1 && Convert.ToInt32(GameMode) != 2 && Convert.ToInt32(GameMode) != 1)
             {
                 BotStep();
                 this.Update();
