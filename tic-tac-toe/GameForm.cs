@@ -21,7 +21,9 @@ namespace tic_tac_toe
         private int GameSize { get; set; }
         private object GameMode { get; set; }
         private int PlayerNumber { get; set; }
-        private bool BlockWin { get; set; }
+        private Thread MainThread { get; set; }
+
+        private bool exitFlag = false;
 
         public GameForm()
         {
@@ -39,14 +41,36 @@ namespace tic_tac_toe
             SetStartParams(gameSize, gameMode);
         }
 
+        private void gameStartElementsHideOrShow(ShowOrHide showOrHide)
+        {
+            if(showOrHide == ShowOrHide.Hide)
+            {
+                exitFlag = false;
+                startOverButton.Visible = true;
+                goGameButton.Visible = false;
+                radioButton5vs5.Visible = false;
+                radioButton3vs3.Visible = false;
+                gameModeComboBox.Visible = false;
+                gameStatusLabel.Visible = true;
+                pictureBox1.Visible = true;
+            }
+            else if (showOrHide == ShowOrHide.Show)
+            {
+                exitFlag = true;
+                startOverButton.Visible = false;
+                goGameButton.Visible = true;
+                radioButton3vs3.Visible = true;
+                radioButton5vs5.Visible = true;
+                gameModeComboBox.Visible = true;
+                gameStatusLabel.Visible = false;
+                pictureBox1.Visible = false;
+                this.BackgroundImage = null;
+            }
+        }
+
         private void startOverButton_Click(object sender, EventArgs e)
         {
-            startOverButton.Visible = false;
-            goGameButton.Visible = true;
-            radioButton3vs3.Visible = true;
-            radioButton5vs5.Visible = true;
-            gameModeComboBox.Visible = true;
-            this.BackgroundImage = null;
+            gameStartElementsHideOrShow(ShowOrHide.Show);
             HideOrShowButtons(ShowOrHide.Hide);
             var gameSize = radioButton3vs3.Checked ? 3 : 5;
             var gameMode = gameModeComboBox.SelectedIndex;
@@ -55,12 +79,7 @@ namespace tic_tac_toe
 
         public void SetStartParams(int gameSize, int gameMode)
         {
-            startOverButton.Visible = true;
-            goGameButton.Visible = false;
-            radioButton5vs5.Visible = false;
-            radioButton3vs3.Visible = false;
-            gameModeComboBox.Visible = false;
-
+            gameStartElementsHideOrShow(ShowOrHide.Hide);
             Random gen = new Random();
             ThreeVsThreeWinIf = new Button[8, 3] {
                     { button1, button2, button3 },  { button1, button4, button7 }, { button1, button5, button9 },
@@ -109,12 +128,20 @@ namespace tic_tac_toe
 
             if (Convert.ToInt32(GameMode) == 2)
             {
-                for (int i = 0; i < GameSize * GameSize; i++)
-                {
+                Thread myThread = new Thread(new ThreadStart(BotInNewThread));
+                myThread.Start(); // запускаем поток
+            }
+        }
 
-                    Thread.Sleep(1500);
-                    Task.Run(() => BotStep());
-                    this.Update();
+        public void BotInNewThread()
+        {
+            for (int i = 0; i < GameSize * GameSize; i++)
+            {
+                Thread.Sleep(1500);
+                if (!exitFlag)
+                {
+                    BotStep();
+                    Invoke(new Action(() => this.Update()));
                     if (gameStatusLabel.Text == String.Empty)
                         break;
                 }
@@ -144,7 +171,7 @@ namespace tic_tac_toe
                 if (CheckWinner())
                     return;
                 PlayerNumber = PlayerNumber == 1 ? 2 : 1;
-                gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
+                Invoke(new Action(() => gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}"));
                 pic2 = PlayerNumber == 2 ? Resources.cross : Resources.zero;
                 pictureBox1.Image = pic2;
                 CheckDraw();
@@ -159,7 +186,7 @@ namespace tic_tac_toe
                 if (CheckWinner())
                     return;
                 PlayerNumber = PlayerNumber == 1 ? 2 : 1;
-                gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
+                Invoke(new Action(() => gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}"));
                 pic2 = PlayerNumber == 2 ? Resources.cross : Resources.zero;
                 pictureBox1.Image = pic2;
                 CheckDraw();
@@ -219,7 +246,7 @@ namespace tic_tac_toe
                     if (CheckWinner())
                         break;
                     PlayerNumber = PlayerNumber == 1 ? 2 : 1;
-                    gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
+                    Invoke(new Action(() => gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}"));
                     pic2 = PlayerNumber == 2 ? Resources.cross : Resources.zero;
                     pictureBox1.Image = pic2;
                     CheckDraw();
@@ -244,7 +271,7 @@ namespace tic_tac_toe
                         var button = contol as Button;
                         if (button != goGameButton && button != startOverButton)
                         {
-                            button.Enabled = false;
+                            Invoke(new Action(() => button.Enabled = false));
                         }
                     }
                 }
@@ -421,6 +448,16 @@ namespace tic_tac_toe
         /// <returns></returns>
         public bool CheckWinner()
         {
+            int imageZeroWidth = 0;
+            Invoke((MethodInvoker)(delegate ()
+            {
+                imageZeroWidth = Resources.zero.Width;
+            }));
+            int imageCrossWidth = 0;
+            Invoke((MethodInvoker)(delegate ()
+            {
+                imageCrossWidth = Resources.cross.Width;
+            }));
             var buttonsIdArr = GameSize == 3 ? ThreeVsThreeWinIf : FiveVsFiveWinIf;
             bool result = false;
             int iterations = GameSize == 3 ? 8 : 12;
@@ -429,7 +466,7 @@ namespace tic_tac_toe
                 result = true;
                 for (int j = 0; j < GameSize; ++j)
                 {
-                    if (buttonsIdArr[i, j].BackgroundImage?.Width != Resources.cross.Width)
+                    if (buttonsIdArr[i, j].BackgroundImage?.Width != imageCrossWidth)
                     {
                         result = false;
                         break;
@@ -437,7 +474,7 @@ namespace tic_tac_toe
                 }
                 if (result)
                 {
-                    gameStatusLabel.Text = $"";
+                    Invoke(new Action(() => gameStatusLabel.Text = $""));
                     pictureBox1.Image = null;
                     MessageBox.Show($"Выиграл игрок №{PlayerNumber} ");
                     RefreshBattlefield(result);
@@ -447,7 +484,7 @@ namespace tic_tac_toe
                 result = true;
                 for (int j = 0; j < GameSize; ++j)
                 {
-                    if (buttonsIdArr[i, j].BackgroundImage?.Width != Resources.zero.Width)
+                    if (buttonsIdArr[i, j].BackgroundImage?.Width != imageZeroWidth)
                     {
                         result = false;
                         break;
@@ -455,7 +492,7 @@ namespace tic_tac_toe
                 }
                 if (result)
                 {
-                    gameStatusLabel.Text = $"";
+                    Invoke(new Action(() => gameStatusLabel.Text = $""));
                     pictureBox1.Image = null;
                     MessageBox.Show($"Выиграл игрок №{PlayerNumber} ");
                     RefreshBattlefield(result);
@@ -490,7 +527,7 @@ namespace tic_tac_toe
             }
             if (result == true)
             {
-                gameStatusLabel.Text = $"";
+                Invoke(new Action(() => gameStatusLabel.Text = $""));
                 pictureBox1.Image = null;
                 MessageBox.Show($"Ничья!");
                 RefreshBattlefield(result);
