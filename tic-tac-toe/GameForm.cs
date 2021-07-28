@@ -46,6 +46,7 @@ namespace tic_tac_toe
             radioButton3vs3.Visible = true;
             radioButton5vs5.Visible = true;
             gameModeComboBox.Visible = true;
+            this.BackgroundImage = null;
             HideOrShowButtons(ShowOrHide.Hide);
             var gameSize = radioButton3vs3.Checked ? 3 : 5;
             var gameMode = gameModeComboBox.SelectedIndex;
@@ -112,7 +113,7 @@ namespace tic_tac_toe
                 {
 
                     Thread.Sleep(1500);
-                    BotStep();
+                    Task.Run(() => BotStep());
                     this.Update();
                     if (gameStatusLabel.Text == String.Empty)
                         break;
@@ -363,6 +364,12 @@ namespace tic_tac_toe
                 }
             }
         }
+
+        /// <summary>
+        /// Обработка хода игрока
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Click(object sender, EventArgs e)
         {
             switch (GameMode)
@@ -412,7 +419,7 @@ namespace tic_tac_toe
         /// Проверка выигрыша
         /// </summary>
         /// <returns></returns>
-        private bool CheckWinner()
+        public bool CheckWinner()
         {
             var buttonsIdArr = GameSize == 3 ? ThreeVsThreeWinIf : FiveVsFiveWinIf;
             bool result = false;
