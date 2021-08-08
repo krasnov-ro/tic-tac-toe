@@ -168,6 +168,9 @@ namespace tic_tac_toe
             {
                 var ij = whoIsWin.Split(';');
                 buttonsIdArr[Convert.ToInt32(ij[0]), Convert.ToInt32(ij[1])].BackgroundImage = pic1;
+                
+                // Замораживаем клетку на которой уже стоит либо крестик либо нолик
+                buttonsIdArr[Convert.ToInt32(ij[0]), Convert.ToInt32(ij[1])].GetType().GetProperty("Enabled").SetValue(buttonsIdArr[Convert.ToInt32(ij[0]), Convert.ToInt32(ij[1])], false);
                 if (CheckWinner())
                     return;
                 PlayerNumber = PlayerNumber == 1 ? 2 : 1;
@@ -183,6 +186,10 @@ namespace tic_tac_toe
             {
                 var ij = whoIsBlock.Split(';');
                 buttonsIdArr[Convert.ToInt32(ij[0]), Convert.ToInt32(ij[1])].BackgroundImage = pic1;
+
+                // Замораживаем клетку на которой уже стоит либо крестик либо нолик
+                buttonsIdArr[Convert.ToInt32(ij[0]), Convert.ToInt32(ij[1])].GetType().GetProperty("Enabled").SetValue(buttonsIdArr[Convert.ToInt32(ij[0]), Convert.ToInt32(ij[1])], false);
+
                 if (CheckWinner())
                     return;
                 PlayerNumber = PlayerNumber == 1 ? 2 : 1;
@@ -243,6 +250,9 @@ namespace tic_tac_toe
                 if (result == true)
                 {
                     buttonsIdArr[i, setPosition].BackgroundImage = pic1;
+
+                    // Замораживаем клетку на которой уже стоит либо крестик либо нолик
+                    buttonsIdArr[i, setPosition].GetType().GetProperty("Enabled").SetValue(buttonsIdArr[i, setPosition], false);
                     if (CheckWinner())
                         break;
                     PlayerNumber = PlayerNumber == 1 ? 2 : 1;
@@ -410,6 +420,7 @@ namespace tic_tac_toe
                         PlayerNumber = 1;
                         gameStatusLabel.Text = $"Ходит игрок №{PlayerNumber}";
                         pictureBox1.Image = PlayerNumber == 1 ? Resources.zero : Resources.cross;
+                        sender.GetType().GetProperty("Enabled").SetValue(sender, false);
                         BotStep();
                     }
                     break;
@@ -472,31 +483,14 @@ namespace tic_tac_toe
                         break;
                     }
                 }
-                if (result)
-                {
-                    Invoke(new Action(() => gameStatusLabel.Text = $""));
-                    pictureBox1.Image = null;
-                    MessageBox.Show($"Выиграл игрок №{PlayerNumber} ");
-                    RefreshBattlefield(result);
-                    return result;
-                }
 
-                result = true;
-                for (int j = 0; j < GameSize; ++j)
-                {
-                    if (buttonsIdArr[i, j].BackgroundImage?.Width != imageZeroWidth)
-                    {
-                        result = false;
-                        break;
-                    }
-                }
                 if (result)
                 {
                     Invoke(new Action(() => gameStatusLabel.Text = $""));
                     pictureBox1.Image = null;
                     MessageBox.Show($"Выиграл игрок №{PlayerNumber} ");
-                    RefreshBattlefield(result);
                     return result;
+                    RefreshBattlefield(result);
                 }
             }
             return result;
